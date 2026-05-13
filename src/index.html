@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Unsere Familienrezepte – immer dabei, auch offline.">
+  <meta name="theme-color" content="#4a6e3a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rezepte">
+
+  <title>Omas Rezepte</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header>
+    <div class="header-inner">
+      <div class="logo"><span>Rezepte</span></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" id="btn-add" aria-label="Neues Rezept hinzufügen">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Rezept
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────────────────────── -->
+  <main>
+    <!-- Search & filter -->
+    <div class="controls">
+      <div class="search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="search" placeholder="Rezept oder Zutat suchen …" autocomplete="off" spellcheck="false">
+        <button id="search-clear" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--ink-lt);font-size:1.1rem;cursor:pointer;padding:4px;" aria-label="Suche leeren">✕</button>
+      </div>
+      <div class="filter-chips" id="chips" role="group" aria-label="Kategorien"></div>
+    </div>
+
+    <!-- Results -->
+    <p class="results-info" id="results-info" aria-live="polite"></p>
+
+    <!-- Recipe grid -->
+    <div class="grid" id="grid" role="list"></div>
+  </main>
+
+  <!-- ── Detail overlay ─────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="detail-overlay" role="dialog" aria-modal="true" aria-label="Rezeptdetails">
+    <div class="modal" id="detail-body"></div>
+  </div>
+
+  <!-- ── Add/Edit overlay ───────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="add-overlay" role="dialog" aria-modal="true" aria-label="Rezept bearbeiten">
+    <div class="modal" id="add-body"></div>
+  </div>
+
+  <!-- ── Toast ──────────────────────────────────────────────────────────── -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
