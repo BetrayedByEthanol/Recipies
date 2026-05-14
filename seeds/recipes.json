@@ -1,0 +1,145 @@
+[
+  {
+    "title": "Rindergulasch",
+    "category": "Fleisch",
+    "emoji": "🥩",
+    "duration_minutes": 120,
+    "servings": 4,
+    "image_url": null,
+    "ingredients": [
+      { "amount": "800",  "unit": "g",   "name": "Rindfleisch (Schulter), gewürfelt" },
+      { "amount": "4",    "unit": "Stk", "name": "Zwiebeln, fein gehackt" },
+      { "amount": "2",    "unit": "EL",  "name": "Paprikapulver edelsüß" },
+      { "amount": "1",    "unit": "TL",  "name": "Kümmel, gemahlen" },
+      { "amount": "2",    "unit": "EL",  "name": "Tomatenmark" },
+      { "amount": "400",  "unit": "ml",  "name": "Rinderbrühe" },
+      { "amount": "2",    "unit": "EL",  "name": "Butterschmalz" }
+    ],
+    "steps": [
+      "Butterschmalz in einem schweren Topf erhitzen. Zwiebeln darin bei mittlerer Hitze 15–20 Minuten goldbraun dünsten.",
+      "Fleisch in Portionen rundherum kräftig anbraten, dann beiseitelegen.",
+      "Topf vom Herd nehmen, Paprikapulver und Kümmel einrühren, dann Tomatenmark zugeben.",
+      "Fleisch zurück in den Topf, mit Brühe aufgießen und gut vermengen.",
+      "Bei kleiner Hitze zugedeckt ca. 90 Minuten schmoren bis das Fleisch zart ist. Mit Salz und Pfeffer abschmecken."
+    ]
+  },
+  {
+    "title": "Apfelkuchen vom Blech",
+    "category": "Backen",
+    "emoji": "🍎",
+    "duration_minutes": 75,
+    "servings": 12,
+    "image_url": null,
+    "ingredients": [
+      { "amount": "300", "unit": "g",    "name": "Mehl" },
+      { "amount": "200", "unit": "g",    "name": "Butter, zimmerwarm" },
+      { "amount": "150", "unit": "g",    "name": "Zucker" },
+      { "amount": "3",   "unit": "Stk",  "name": "Eier" },
+      { "amount": "1",   "unit": "Pck.", "name": "Backpulver" },
+      { "amount": "6",   "unit": "Stk",  "name": "Äpfel, geschält & in Scheiben" },
+      { "amount": "2",   "unit": "TL",   "name": "Zimt" },
+      { "amount": "2",   "unit": "EL",   "name": "Zucker zum Bestreuen" }
+    ],
+    "steps": [
+      "Ofen auf 180 °C vorheizen. Backblech (ca. 30×40 cm) einfetten und bemehlen.",
+      "Butter und Zucker cremig rühren, Eier einzeln unterrühren.",
+      "Mehl und Backpulver unterheben. Teig auf dem Blech verteilen.",
+      "Apfelscheiben fächerartig auflegen, mit Zimt-Zucker bestreuen.",
+      "35–40 Minuten backen bis goldbraun. Stäbchenprobe machen."
+    ]
+  },
+  {
+    "title": "Kartoffelsuppe",
+    "category": "Suppen",
+    "emoji": "🥣",
+    "duration_minutes": 45,
+    "servings": 6,
+    "image_url": null,
+    "ingredients": [
+      { "amount": "1000", "unit": "g",   "name": "Kartoffeln, gewürfelt" },
+      { "amount": "2",    "unit": "Stk", "name": "Möhren, in Scheiben" },
+      { "amount": "1",    "unit": "Stk", "name": "Stange Lauch, in Ringe" },
+      { "amount": "200",  "unit": "g",   "name": "Speck, gewürfelt" },
+      { "amount": "1.5",  "unit": "l",   "name": "Gemüsebrühe" },
+      { "amount": "150",  "unit": "ml",  "name": "Sahne" },
+      { "amount": "1",    "unit": "Stk", "name": "Lorbeerblatt" }
+    ],
+    "steps": [
+      "Speck auslassen, Lauch und Möhren andünsten.",
+      "Kartoffeln und Brühe zugeben, Lorbeer einlegen. 25 Minuten köcheln.",
+      "Lorbeer entfernen. Suppe teilweise pürieren – Stückchen behalten.",
+      "Sahne einrühren, mit Majoran, Salz und Pfeffer abschmecken."
+    ]
+  },
+  {
+    "title": "Käsespätzle",
+    "category": "Vegetarisch",
+    "emoji": "🧀",
+    "duration_minutes": 40,
+    "servings": 4,
+    "image_url": null,
+    "ingredients": [
+      { "amount": "400", "unit": "g",   "name": "Mehl" },
+      { "amount": "4",   "unit": "Stk", "name": "Eier" },
+      { "amount": "200", "unit": "ml",  "name": "Wasser, lauwarm" },
+      { "amount": "1",   "unit": "TL",  "name": "Salz" },
+      { "amount": "300", "unit": "g",   "name": "Allgäuer Emmentaler, gerieben" },
+      { "amount": "3",   "unit": "Stk", "name": "Zwiebeln, in Ringe" },
+      { "amount": "3",   "unit": "EL",  "name": "Butter" }
+    ],
+    "steps": [
+      "Mehl, Eier, Wasser und Salz zu einem zähen Teig schlagen bis er Blasen wirft.",
+      "Teig portionsweise ins kochende Salzwasser streichen, herausnehmen wenn Spätzle oben schwimmen.",
+      "In gebutterte Form schichten und mit Käse abwechseln. Bei 180 °C 10 Min überbacken.",
+      "Zwiebeln mit Butter und etwas Zucker goldbraun karamellisieren und darüber geben."
+    ]
+  },
+  {
+    "title": "Semmelknödel",
+    "category": "Beilagen",
+    "emoji": "🫓",
+    "duration_minutes": 50,
+    "servings": 4,
+    "image_url": null,
+    "ingredients": [
+      { "amount": "6",   "unit": "Stk", "name": "altbackene Brötchen" },
+      { "amount": "250", "unit": "ml",  "name": "Milch, lauwarm" },
+      { "amount": "2",   "unit": "Stk", "name": "Eier" },
+      { "amount": "1",   "unit": "Stk", "name": "Zwiebel, fein gewürfelt" },
+      { "amount": "2",   "unit": "EL",  "name": "Butter" },
+      { "amount": "3",   "unit": "EL",  "name": "Petersilie, gehackt" }
+    ],
+    "steps": [
+      "Brötchen in Scheiben schneiden, mit lauwarmer Milch übergießen. 15 Minuten einweichen.",
+      "Zwiebel in Butter glasig dünsten. Mit Eiern und Petersilie zur Masse geben.",
+      "Mit nassen Händen gleichmäßige Knödel formen.",
+      "In siedendem Salzwasser 20 Minuten ziehen lassen – nicht kochen!"
+    ]
+  },
+  {
+    "title": "Zwetschgendatschi",
+    "category": "Backen",
+    "emoji": "🍑",
+    "duration_minutes": 90,
+    "servings": 16,
+    "image_url": null,
+    "ingredients": [
+      { "amount": "500",  "unit": "g",    "name": "Mehl" },
+      { "amount": "1",    "unit": "Pck.", "name": "Trockenhefe" },
+      { "amount": "80",   "unit": "g",    "name": "Zucker" },
+      { "amount": "80",   "unit": "g",    "name": "Butter, zimmerwarm" },
+      { "amount": "1",    "unit": "Stk",  "name": "Ei" },
+      { "amount": "250",  "unit": "ml",   "name": "Milch, lauwarm" },
+      { "amount": "1500", "unit": "g",    "name": "Zwetschgen, entsteint & geviertelt" },
+      { "amount": "2",    "unit": "EL",   "name": "Zucker" },
+      { "amount": "1",    "unit": "TL",   "name": "Zimt" }
+    ],
+    "steps": [
+      "Hefe in lauwarmer Milch auflösen. Mit Mehl, Zucker, Salz, Butter und Ei zu einem Hefeteig kneten.",
+      "Abgedeckt 45 Minuten an einem warmen Ort gehen lassen.",
+      "Teig auf einem gefetteten Backblech ausrollen. Zwetschgen dicht auflegen.",
+      "Mit Zimt-Zucker bestreuen. Nochmals 15 Minuten ruhen lassen.",
+      "Bei 190 °C ca. 35 Minuten backen. Noch warm mit Schlagsahne servieren."
+    ]
+  }
+]
