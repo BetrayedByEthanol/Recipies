@@ -5,22 +5,18 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@9 --activate
 
-# Copy manifests for layer caching
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
-# Copy source
 COPY shared/ ./shared/
 COPY server/ ./server/
 COPY seeds/ ./seeds/
 
-# Build shared first, then server
-RUN pnpm exec tsc -p shared/tsconfig.json
-WORKDIR /app/server
-RUN pnpm run build
+RUN pnpm --filter @recipes/shared run build
+RUN pnpm --filter server run build
 
 # ── Runtime ───────────────────────────────────────────────────────────────────
 FROM node:20-alpine AS runtime
@@ -33,7 +29,7 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 COPY --from=builder /app/server/dist ./server/dist
 COPY --from=builder /app/shared/dist ./shared/dist
