@@ -16,7 +16,7 @@ COPY server/ ./server/
 COPY seeds/ ./seeds/
 
 RUN pnpm --filter @recipes/shared run build
-RUN pnpm --filter server run build
+RUN pnpm --filter recipes-server run build
 
 # ── Runtime ───────────────────────────────────────────────────────────────────
 FROM node:20-alpine AS runtime

@@ -15,7 +15,7 @@ COPY shared/ ./shared/
 COPY client/ ./client/
 
 RUN pnpm --filter @recipes/shared run build
-RUN pnpm --filter client run build
+RUN pnpm --filter recipes-client run build
 
 # ── Runtime: nginx ────────────────────────────────────────────────────────────
 FROM nginx:1.25-alpine AS runtime
