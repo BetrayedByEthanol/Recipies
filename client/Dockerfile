@@ -9,15 +9,13 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY shared/package.json ./shared/
 COPY client/package.json ./client/
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY shared/ ./shared/
 COPY client/ ./client/
 
-# Build shared first so @shared alias resolves during vite build
-RUN pnpm exec tsc -p shared/tsconfig.json
-WORKDIR /app/client
-RUN pnpm run build
+RUN pnpm --filter @recipes/shared run build
+RUN pnpm --filter client run build
 
 # ── Runtime: nginx ────────────────────────────────────────────────────────────
 FROM nginx:1.25-alpine AS runtime

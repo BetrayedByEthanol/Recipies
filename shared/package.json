@@ -9,5 +9,11 @@
       "types": "./dist/types.d.ts",
       "require": "./dist/types.js"
     }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
   }
 }
