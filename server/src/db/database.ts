@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
-import type { Recipe, RecipePayload, Ingredient } from '../../shared/types';
+import type { Recipe, RecipePayload, Ingredient } from '@recipes/shared';
 
 const DB_PATH = process.env.DB_PATH ?? path.join(__dirname, '../../data/recipes.db');
 const SEEDS_PATH = path.join(__dirname, '../../../seeds/recipes.json');

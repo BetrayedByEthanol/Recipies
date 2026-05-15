@@ -1,37 +1,60 @@
-import type { Recipe, RecipePayload } from '@shared/types';
+import { Router, Request, Response } from 'express';
+import { getAllRecipes, getRecipeById, createRecipe, updateRecipe, deleteRecipe } from '../db/database';
+import { recipePayloadSchema } from './validation';
+import type { RecipePayload } from '@recipes/shared';
 
-const BASE = '/api';
+export const recipeRouter = Router();
 
-async function request<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${url}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
+// GET /recipes
+recipeRouter.get('/', (_req: Request, res: Response) => {
+  const data = getAllRecipes();
+  res.json({ data });
+});
 
-  if (res.status === 204) return undefined as T;
+// GET /recipes/:id
+recipeRouter.get('/:id', (req: Request, res: Response) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return void res.status(400).json({ error: 'Ungültige ID' });
 
-  const json = await res.json();
+  const recipe = getRecipeById(id);
+  if (!recipe) return void res.status(404).json({ error: 'Rezept nicht gefunden' });
 
-  if (!res.ok) {
-    throw new Error((json as { error?: string }).error ?? `HTTP ${res.status}`);
+  res.json({ data: recipe });
+});
+
+// POST /recipes
+recipeRouter.post('/', (req: Request, res: Response) => {
+  const parsed = recipePayloadSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return void res.status(422).json({ error: parsed.error.flatten() });
+  }
+  const recipe = createRecipe(parsed.data as RecipePayload);
+  res.status(201).json({ data: recipe });
+});
+
+// PUT /recipes/:id
+recipeRouter.put('/:id', (req: Request, res: Response) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return void res.status(400).json({ error: 'Ungültige ID' });
+
+  const parsed = recipePayloadSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return void res.status(422).json({ error: parsed.error.flatten() });
   }
 
-  return (json as { data: T }).data;
-}
+  const recipe = updateRecipe(id, parsed.data as RecipePayload);
+  if (!recipe) return void res.status(404).json({ error: 'Rezept nicht gefunden' });
 
-export const api = {
-  getRecipes: (): Promise<Recipe[]> =>
-    request('/recipes'),
+  res.json({ data: recipe });
+});
 
-  getRecipe: (id: number): Promise<Recipe> =>
-    request(`/recipes/${id}`),
+// DELETE /recipes/:id
+recipeRouter.delete('/:id', (req: Request, res: Response) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return void res.status(400).json({ error: 'Ungültige ID' });
 
-  createRecipe: (payload: RecipePayload): Promise<Recipe> =>
-    request('/recipes', { method: 'POST', body: JSON.stringify(payload) }),
+  const ok = deleteRecipe(id);
+  if (!ok) return void res.status(404).json({ error: 'Rezept nicht gefunden' });
 
-  updateRecipe: (id: number, payload: RecipePayload): Promise<Recipe> =>
-    request(`/recipes/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
-
-  deleteRecipe: (id: number): Promise<void> =>
-    request(`/recipes/${id}`, { method: 'DELETE' }),
-};
+  res.status(204).send();
+});

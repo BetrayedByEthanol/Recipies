@@ -10,6 +10,9 @@ importers:
 
   client:
     dependencies:
+      '@recipes/shared':
+        specifier: workspace:*
+        version: link:../shared
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -59,6 +62,9 @@ importers:
 
   server:
     dependencies:
+      '@recipes/shared':
+        specifier: workspace:*
+        version: link:../shared
       better-sqlite3:
         specifier: ^9.4.3
         version: 9.6.0
