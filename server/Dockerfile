@@ -1,33 +1,44 @@
+# Build context: repository root
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+RUN corepack enable && corepack prepare pnpm@9 --activate
 
-# Copy shared types and server source
-COPY ../shared ./shared
-COPY . .
+# Copy manifests for layer caching
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY shared/package.json ./shared/
+COPY server/package.json ./server/
 
-RUN npm run build
+RUN pnpm install --frozen-lockfile
+
+# Copy source
+COPY shared/ ./shared/
+COPY server/ ./server/
+COPY seeds/ ./seeds/
+
+# Build shared first, then server
+RUN pnpm exec tsc -p shared/tsconfig.json
+WORKDIR /app/server
+RUN pnpm run build
 
 # ── Runtime ───────────────────────────────────────────────────────────────────
 FROM node:20-alpine AS runtime
 
 WORKDIR /app
 
-# Install only production deps
-COPY package*.json ./
-RUN npm ci --omit=dev
+RUN corepack enable && corepack prepare pnpm@9 --activate
 
-# Copy compiled output and shared types (needed at runtime via paths)
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/shared ./shared
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY shared/package.json ./shared/
+COPY server/package.json ./server/
 
-# Seeds are mounted or baked in
-COPY ../seeds ./seeds
+RUN pnpm install --frozen-lockfile --prod
 
-# Data directory will be a Docker volume
+COPY --from=builder /app/server/dist ./server/dist
+COPY --from=builder /app/shared/dist ./shared/dist
+COPY seeds/ ./seeds/
+
 RUN mkdir -p /data
 
 ENV NODE_ENV=production
@@ -36,4 +47,4 @@ ENV PORT=3001
 
 EXPOSE 3001
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "server/dist/index.js"]
