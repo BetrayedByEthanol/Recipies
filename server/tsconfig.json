@@ -3,14 +3,13 @@
     "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "dist",
-    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "noEmit": true,
     "paths": {
-      "@recipes/shared": ["../shared/dist/types.d.ts"]
+      "@recipes/shared": ["../shared/types.ts"]
     }
   },
   "include": ["src"],

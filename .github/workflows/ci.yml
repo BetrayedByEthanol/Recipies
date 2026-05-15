@@ -27,6 +27,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # typecheck uses tsconfig.json which resolves @recipes/shared
+      # directly from shared/types.ts — no build step needed
       - run: pnpm --filter recipes-server run typecheck
       - run: pnpm --filter recipes-server run lint
 
