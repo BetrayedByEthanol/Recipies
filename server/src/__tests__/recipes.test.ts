@@ -1,14 +1,13 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
-import { createApp } from '../app';
 import type { Application } from 'express';
 
 let app: Application;
 
-beforeAll(() => {
-  // vitest isolates modules per file, so DB_PATH is read fresh by the singleton
+beforeAll(async () => {
   process.env.DB_PATH = ':memory:';
-  app = createApp();
+  const mod = await import('../app');
+  app = mod.createApp();
 });
 
 afterAll(() => {
