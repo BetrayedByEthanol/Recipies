@@ -77,17 +77,22 @@ jobs:
       - name: Check frontend and API through nginx
         run: |
           for i in {1..30}; do
-            if curl -fsS http://localhost/ -o /tmp/index.html \
-              && grep -q '<div id="root"></div>' /tmp/index.html \
-              && grep -q '/assets/' /tmp/index.html \
-              && (curl -fsS http://localhost/manifest.webmanifest -o /tmp/manifest.json || curl -fsS http://localhost/manifest.json -o /tmp/manifest.json) \
-              && node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('/tmp/manifest.json','utf8'));" \
-              && curl -fsS http://localhost/pwa-192x192.png -o /tmp/pwa-192x192.png \
-              && curl -fsS http://localhost/pwa-512x512.png -o /tmp/pwa-512x512.png \
-              && curl -fsS http://localhost/api/recipes > /dev/null; then
-              echo "Docker smoke test passed"
-              exit 0
-            fi
+            if curl -fsS http://localhost/ -o /tmp/index.html               && grep -q '<div id="root"></div>' /tmp/index.html               && grep -q 'rel="manifest"' /tmp/index.html               && grep -q '/manifest.webmanifest' /tmp/index.html               && curl -fsS http://localhost/manifest.webmanifest -o /tmp/manifest.json               && node -e "
+                const fs = require('fs');
+                const text = fs.readFileSync('/tmp/manifest.json', 'utf8');
+                if (text.trim().startsWith('<')) throw new Error('manifest returned HTML');
+                const manifest = JSON.parse(text);
+                if (!manifest.name) throw new Error('manifest missing name');
+                if (!manifest.icons || manifest.icons.length < 2) throw new Error('manifest missing icons');
+                if (manifest.display !== 'standalone') throw new Error('manifest display is not standalone');
+              "               && curl -fsS http://localhost/pwa-192x192.png -o /tmp/pwa-192x192.png               && curl -fsS http://localhost/pwa-512x512.png -o /tmp/pwa-512x512.png               && curl -fsS http://localhost/api/recipes > /dev/null; then
+              CSS_PATH=$(grep -oE '/assets/[^" ]+\.css' /tmp/index.html | head -n1)
+              test -n "$CSS_PATH"
+              curl -fsS "http://localhost${CSS_PATH}" -o /tmp/app.css
+              if ! grep -Eq 'position:fixed|\.flex|rounded-xl' /tmp/app.css; then
+                echo "Tailwind CSS output not detected"
+                exit 1
+              fi
             docker compose ps
             sleep 2
           done

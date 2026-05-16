@@ -261,8 +261,8 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
 
           {/* Actions */}
           <div className="sticky bottom-0 -mx-4 sm:-mx-6 mt-6 px-4 sm:px-6 pt-4 border-t border-parchment-dark bg-parchment pb-[calc(1rem+env(safe-area-inset-bottom))]">
-            <div className="flex gap-3">
             <button
+              type="button"
               onClick={handleSubmit}
               disabled={saving}
               className="flex-1 py-3 bg-sage text-white rounded-xl font-body font-medium shadow-md shadow-sage/30 hover:bg-sage-light active:scale-95 transition-all disabled:opacity-60"
@@ -270,13 +270,13 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
               {saving ? 'Speichern …' : '💾 Speichern'}
             </button>
             <button
+              type="button"
               onClick={onClose}
               disabled={saving}
               className="px-6 py-3 border-2 border-parchment-dark text-ink-light rounded-xl font-body font-medium hover:bg-parchment-dark transition-colors"
             >
               Abbrechen
             </button>
-          </div>
           </div>
         </div>
       </div>
