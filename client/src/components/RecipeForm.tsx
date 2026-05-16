@@ -89,15 +89,15 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink/50 backdrop-blur-sm p-2 sm:p-4"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       role="dialog"
       aria-modal="true"
     >
-      <div className="bg-parchment w-full max-w-2xl max-h-[95vh] overflow-y-auto rounded-t-2xl shadow-2xl overscroll-contain animate-slide-up">
+      <div className="w-full max-w-2xl max-h-[92dvh] bg-parchment rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         <div className="w-10 h-1 bg-parchment-dark rounded-full mx-auto mt-3" />
 
-        <div className="p-6 pb-10">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 pb-28 overscroll-contain">
           <h2 className="font-display text-2xl font-bold mb-6">
             {initial ? 'Rezept bearbeiten' : 'Neues Rezept'}
           </h2>
@@ -188,7 +188,7 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
             <label className="block font-hand text-sage text-base font-semibold mb-2">Zutaten *</label>
             <div className="space-y-2">
               {ingredients.map((ing, i) => (
-                <div key={i} className="grid grid-cols-[90px_80px_1fr_36px] gap-2 items-center">
+                <div key={i} className="grid grid-cols-[1fr_1fr_36px] sm:grid-cols-[90px_80px_1fr_36px] gap-2 items-center">
                   <input
                     type="text"
                     value={ing.amount}
@@ -208,7 +208,7 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
                     value={ing.name}
                     onChange={e => setIng(i, 'name', e.target.value)}
                     placeholder="Zutat"
-                    className="px-3 py-2 font-body text-sm bg-white border-2 border-parchment-dark rounded-lg focus:outline-none focus:border-sage transition-colors"
+                    className="col-span-2 sm:col-span-1 px-3 py-2 font-body text-sm bg-white border-2 border-parchment-dark rounded-lg focus:outline-none focus:border-sage transition-colors"
                   />
                   <button
                     type="button"
@@ -260,8 +260,10 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-parchment-dark">
+          <div className="sticky bottom-0 -mx-4 sm:-mx-6 mt-6 px-4 sm:px-6 pt-4 border-t border-parchment-dark bg-parchment pb-[calc(1rem+env(safe-area-inset-bottom))]">
+            <div className="flex gap-3">
             <button
+              type="button"
               onClick={handleSubmit}
               disabled={saving}
               className="flex-1 py-3 bg-sage text-white rounded-xl font-body font-medium shadow-md shadow-sage/30 hover:bg-sage-light active:scale-95 transition-all disabled:opacity-60"
@@ -269,6 +271,7 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
               {saving ? 'Speichern …' : '💾 Speichern'}
             </button>
             <button
+              type="button"
               onClick={onClose}
               disabled={saving}
               className="px-6 py-3 border-2 border-parchment-dark text-ink-light rounded-xl font-body font-medium hover:bg-parchment-dark transition-colors"
