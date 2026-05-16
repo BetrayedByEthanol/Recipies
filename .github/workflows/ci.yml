@@ -30,6 +30,9 @@ jobs:
       # available on ubuntu-latest by default.
       - run: pnpm install --frozen-lockfile
 
+      - name: Build shared
+        run: pnpm --filter @recipes/shared run build
+
       - run: pnpm --filter recipes-server run typecheck
       - run: pnpm --filter recipes-server run lint
       - run: pnpm --filter recipes-server run test
