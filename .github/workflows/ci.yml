@@ -68,5 +68,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Docker images
-        run: docker compose build
+      - name: Build and start Docker stack
+        run: docker compose up -d --build
+
+      - name: Show container status
+        run: docker compose ps
+
+      - name: Check API through nginx
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost/api/recipes > /dev/null; then
+              echo "Docker smoke test passed"
+              exit 0
+            fi
+            docker compose ps
+            sleep 2
+          done
+          echo "Docker smoke test failed"
+          docker compose logs
+          exit 1
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Stop stack
+        if: always()
+        run: docker compose down -v
+
