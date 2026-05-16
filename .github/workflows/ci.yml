@@ -74,10 +74,10 @@ jobs:
       - name: Show container status
         run: docker compose ps
 
-      - name: Check API through nginx
+      - name: Check frontend and API through nginx
         run: |
           for i in {1..30}; do
-            if curl -fsS http://localhost/api/recipes > /dev/null; then
+            if curl -fsS http://localhost/ | tee /tmp/index.html > /dev/null               && grep -q '<div id="root"></div>' /tmp/index.html               && grep -q '/assets/' /tmp/index.html               && curl -fsS http://localhost/api/recipes > /dev/null; then
               echo "Docker smoke test passed"
               exit 0
             fi
