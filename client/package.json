@@ -12,7 +12,8 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@recipes/shared": "workspace:*"
+    "@recipes/shared": "workspace:*",
+    "workbox-window": "^7.4.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.57",
