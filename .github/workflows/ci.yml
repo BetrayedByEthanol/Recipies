@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -93,9 +93,6 @@ jobs:
                 echo "Tailwind CSS output not detected"
                 exit 1
               fi
-              echo "Docker smoke test passed"
-              exit 0
-            fi
             docker compose ps
             sleep 2
           done
