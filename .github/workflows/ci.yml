@@ -77,7 +77,14 @@ jobs:
       - name: Check frontend and API through nginx
         run: |
           for i in {1..30}; do
-            if curl -fsS http://localhost/ | tee /tmp/index.html > /dev/null               && grep -q '<div id="root"></div>' /tmp/index.html               && grep -q '/assets/' /tmp/index.html               && curl -fsS http://localhost/api/recipes > /dev/null; then
+            if curl -fsS http://localhost/ -o /tmp/index.html \
+              && grep -q '<div id="root"></div>' /tmp/index.html \
+              && grep -q '/assets/' /tmp/index.html \
+              && (curl -fsS http://localhost/manifest.webmanifest -o /tmp/manifest.json || curl -fsS http://localhost/manifest.json -o /tmp/manifest.json) \
+              && node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('/tmp/manifest.json','utf8'));" \
+              && curl -fsS http://localhost/pwa-192x192.png -o /tmp/pwa-192x192.png \
+              && curl -fsS http://localhost/pwa-512x512.png -o /tmp/pwa-512x512.png \
+              && curl -fsS http://localhost/api/recipes > /dev/null; then
               echo "Docker smoke test passed"
               exit 0
             fi
