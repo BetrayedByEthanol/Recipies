@@ -3,8 +3,8 @@ import { useRecipes } from './hooks/useRecipes';
 import { RecipeCard } from './components/RecipeCard';
 import { RecipeDetail } from './components/RecipeDetail';
 import { RecipeForm } from './components/RecipeForm';
-import type { Recipe, Category } from '@shared/types';
-import { CATEGORIES } from '@shared/types';
+import type { Recipe, Category } from '@recipes/shared';
+import { CATEGORIES } from '@recipes/shared';
 
 type Modal =
   | { kind: 'none' }

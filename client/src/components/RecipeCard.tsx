@@ -1,4 +1,4 @@
-import type { Recipe } from '@shared/types';
+import type { Recipe } from '@recipes/shared';
 
 interface Props {
   recipe: Recipe;

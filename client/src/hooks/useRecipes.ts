@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api/recipes';
-import type { Recipe, RecipePayload } from '@shared/types';
+import type { Recipe, RecipePayload } from '@recipes/shared';
 
 interface UseRecipesReturn {
   recipes: Recipe[];

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { Recipe, RecipePayload, Ingredient, Category } from '@shared/types';
-import { CATEGORIES } from '@shared/types';
+import type { Recipe, RecipePayload, Ingredient, Category } from '@recipes/shared';
+import { CATEGORIES } from '@recipes/shared';
 
 interface Props {
   initial?: Recipe;
