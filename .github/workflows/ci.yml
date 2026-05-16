@@ -11,7 +11,7 @@ env:
 
 jobs:
   server:
-    name: Server — typecheck & lint
+    name: Server — typecheck, lint & test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,12 +25,14 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      # Full install (no --ignore-scripts) so better-sqlite3 compiles its
+      # native binding on the CI runner. Build tools (python3/make/g++) are
+      # available on ubuntu-latest by default.
       - run: pnpm install --frozen-lockfile
 
-      # typecheck uses tsconfig.json which resolves @recipes/shared
-      # directly from shared/types.ts — no build step needed
       - run: pnpm --filter recipes-server run typecheck
       - run: pnpm --filter recipes-server run lint
+      - run: pnpm --filter recipes-server run test
 
   client:
     name: Client — typecheck, lint & build

@@ -7,13 +7,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      // Automatically update the SW in the background when a new build ships.
       registerType: 'autoUpdate',
-
-      // Assets to precache (shell + fonts are added automatically by Workbox).
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192x192.png'],
-
-      // Web app manifest — controls how the PWA appears when installed.
       manifest: {
         name: 'Rezepte App',
         short_name: 'Rezepte',
@@ -24,62 +19,36 @@ export default defineConfig({
         orientation: 'any',
         lang: 'de',
         icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
-          },
+          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
         ],
       },
-
-      // Workbox config: what gets cached and how.
       workbox: {
-        // Precache all build output (JS, CSS, HTML).
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-
         runtimeCaching: [
           {
-            // API responses: network-first so data is always fresh when online,
-            // falls back to cache when offline.
             urlPattern: /^\/api\//,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 200,
-                maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
-              },
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 7 },
               networkTimeoutSeconds: 5,
             },
           },
           {
-            // Google Fonts: cache-first, they're immutable.
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\//,
             handler: 'CacheFirst',
             options: {
               cacheName: 'google-fonts',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
             },
           },
           {
-            // External images (recipe image_url links): stale-while-revalidate.
             urlPattern: /\.(png|jpg|jpeg|webp|svg)$/,
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'image-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
-              },
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
         ],
@@ -89,7 +58,8 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@shared': path.resolve(__dirname, '../shared'),
+      // Resolves @recipes/shared -> shared/types.ts at build time
+      '@recipes/shared': path.resolve(__dirname, '../shared/types.ts'),
     },
   },
 

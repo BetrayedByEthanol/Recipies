@@ -9,6 +9,9 @@ services:
       PORT: 3001
       DB_PATH: /data/recipes.db
       CLIENT_ORIGIN: http://localhost
+      # Uncomment and set to protect write routes (POST/PUT/DELETE).
+      # If unset, all routes are open (suitable for local/trusted networks).
+      # ADMIN_TOKEN: your-secret-token
     volumes:
       - recipes-data:/data
     expose:

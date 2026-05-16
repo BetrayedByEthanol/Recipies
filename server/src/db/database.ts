@@ -1,53 +1,47 @@
-import Database from 'better-sqlite3';
+import Database, { Database as DatabaseType } from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import type { Recipe, RecipePayload, Ingredient } from '@recipes/shared';
 
-const DB_PATH = process.env.DB_PATH ?? path.join(__dirname, '../../data/recipes.db');
-const SEEDS_PATH = path.join(__dirname, '../../../seeds/recipes.json');
+// ── Schema + seed ─────────────────────────────────────────────────────────────
+function applySchema(db: DatabaseType): void {
+  db.exec(`
+    PRAGMA journal_mode = WAL;
+    PRAGMA foreign_keys = ON;
 
-// Ensure data directory exists
-fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+    CREATE TABLE IF NOT EXISTS recipes (
+      id               INTEGER PRIMARY KEY AUTOINCREMENT,
+      title            TEXT    NOT NULL,
+      category         TEXT    NOT NULL,
+      emoji            TEXT    NOT NULL DEFAULT '🍽️',
+      duration_minutes INTEGER NOT NULL DEFAULT 30,
+      servings         INTEGER NOT NULL DEFAULT 4,
+      image_url        TEXT,
+      ingredients      TEXT    NOT NULL DEFAULT '[]',
+      steps            TEXT    NOT NULL DEFAULT '[]',
+      created_at       TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+      updated_at       TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+    );
 
-export const db = new Database(DB_PATH);
+    CREATE TRIGGER IF NOT EXISTS recipes_updated_at
+    AFTER UPDATE ON recipes
+    BEGIN
+      UPDATE recipes SET updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+      WHERE id = NEW.id;
+    END;
+  `);
+}
 
-// ── Schema ────────────────────────────────────────────────────────────────────
-db.exec(`
-  PRAGMA journal_mode = WAL;
-  PRAGMA foreign_keys = ON;
+function applySeed(db: DatabaseType, seedsPath: string): void {
+  const count = (db.prepare('SELECT COUNT(*) as n FROM recipes').get() as { n: number }).n;
+  if (count > 0 || !fs.existsSync(seedsPath)) return;
 
-  CREATE TABLE IF NOT EXISTS recipes (
-    id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    title            TEXT    NOT NULL,
-    category         TEXT    NOT NULL,
-    emoji            TEXT    NOT NULL DEFAULT '🍽️',
-    duration_minutes INTEGER NOT NULL DEFAULT 30,
-    servings         INTEGER NOT NULL DEFAULT 4,
-    image_url        TEXT,
-    ingredients      TEXT    NOT NULL DEFAULT '[]',
-    steps            TEXT    NOT NULL DEFAULT '[]',
-    created_at       TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
-    updated_at       TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
-  );
-
-  CREATE TRIGGER IF NOT EXISTS recipes_updated_at
-  AFTER UPDATE ON recipes
-  BEGIN
-    UPDATE recipes SET updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
-    WHERE id = NEW.id;
-  END;
-`);
-
-// ── Seed ──────────────────────────────────────────────────────────────────────
-const count = (db.prepare('SELECT COUNT(*) as n FROM recipes').get() as { n: number }).n;
-
-if (count === 0 && fs.existsSync(SEEDS_PATH)) {
-  const seeds: RecipePayload[] = JSON.parse(fs.readFileSync(SEEDS_PATH, 'utf8'));
+  const seeds: RecipePayload[] = JSON.parse(fs.readFileSync(seedsPath, 'utf8'));
   const insert = db.prepare(`
     INSERT INTO recipes (title, category, emoji, duration_minutes, servings, image_url, ingredients, steps)
     VALUES (@title, @category, @emoji, @duration_minutes, @servings, @image_url, @ingredients, @steps)
   `);
-  const insertMany = db.transaction((rows: RecipePayload[]) => {
+  db.transaction((rows: RecipePayload[]) => {
     for (const r of rows) {
       insert.run({
         ...r,
@@ -57,10 +51,26 @@ if (count === 0 && fs.existsSync(SEEDS_PATH)) {
         steps: JSON.stringify(r.steps),
       });
     }
-  });
-  insertMany(seeds);
+  })(seeds);
   console.log(`Seeded ${seeds.length} recipes.`);
 }
+
+// ── Factory ───────────────────────────────────────────────────────────────────
+export function initDb(dbPath: string, seedsPath?: string): DatabaseType {
+  if (dbPath !== ':memory:') {
+    fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  }
+  const db = new Database(dbPath);
+  applySchema(db);
+  if (seedsPath) applySeed(db, seedsPath);
+  return db;
+}
+
+// ── Singleton for production use ──────────────────────────────────────────────
+const DB_PATH    = process.env.DB_PATH    ?? path.join(__dirname, '../../data/recipes.db');
+const SEEDS_PATH = path.join(__dirname, '../../../seeds/recipes.json');
+
+export const db = initDb(DB_PATH, SEEDS_PATH);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function parseRow(row: Record<string, unknown>): Recipe {

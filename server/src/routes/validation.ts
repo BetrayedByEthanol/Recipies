@@ -1,10 +1,5 @@
 import { z } from 'zod';
-
-// Kept in sync with shared/types.ts — update both if categories change.
-const CATEGORIES = [
-  'Fleisch', 'Geflügel', 'Fisch', 'Vegetarisch', 'Vegan',
-  'Suppen', 'Beilagen', 'Backen', 'Desserts', 'Sonstiges',
-] as const;
+import { CATEGORIES } from '@recipes/shared';
 
 export const ingredientSchema = z.object({
   amount: z.string().min(1, 'Menge angeben'),
@@ -14,7 +9,7 @@ export const ingredientSchema = z.object({
 
 export const recipePayloadSchema = z.object({
   title:            z.string().min(1).max(200),
-  category:         z.enum(CATEGORIES),
+  category:         z.enum(CATEGORIES as [string, ...string[]]),
   emoji:            z.string().max(8).optional(),
   duration_minutes: z.number().int().min(1).max(1440),
   servings:         z.number().int().min(1).max(100),

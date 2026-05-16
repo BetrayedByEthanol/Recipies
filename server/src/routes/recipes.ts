@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { getAllRecipes, getRecipeById, createRecipe, updateRecipe, deleteRecipe } from '../db/database';
 import { recipePayloadSchema } from './validation';
+import { requireAdminToken } from '../middleware/auth';
 import type { RecipePayload } from '@recipes/shared';
 
 export const recipeRouter = Router();
@@ -23,7 +24,7 @@ recipeRouter.get('/:id', (req: Request, res: Response) => {
 });
 
 // POST /recipes
-recipeRouter.post('/', (req: Request, res: Response) => {
+recipeRouter.post('/', requireAdminToken, (req: Request, res: Response) => {
   const parsed = recipePayloadSchema.safeParse(req.body);
   if (!parsed.success) {
     return void res.status(422).json({ error: parsed.error.flatten() });
@@ -33,7 +34,7 @@ recipeRouter.post('/', (req: Request, res: Response) => {
 });
 
 // PUT /recipes/:id
-recipeRouter.put('/:id', (req: Request, res: Response) => {
+recipeRouter.put('/:id', requireAdminToken, (req: Request, res: Response) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) return void res.status(400).json({ error: 'Ungültige ID' });
 
@@ -49,7 +50,7 @@ recipeRouter.put('/:id', (req: Request, res: Response) => {
 });
 
 // DELETE /recipes/:id
-recipeRouter.delete('/:id', (req: Request, res: Response) => {
+recipeRouter.delete('/:id', requireAdminToken, (req: Request, res: Response) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) return void res.status(400).json({ error: 'Ungültige ID' });
 

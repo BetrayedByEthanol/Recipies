@@ -1,11 +1,17 @@
 # Recipes App
 
-A self-hosted recipe management PWA. React + TypeScript frontend, Express + SQLite backend. Runs fully offline via PWA caching.
+A self-hosted recipe management PWA. React + TypeScript frontend, Express + SQLite backend.
 
-## Quick start
+The PWA shell and API responses are cached by the service worker, so previously-loaded recipes are available when offline. New recipes require a network connection.
+
+---
+
+## Quick start (Docker)
 
 ```bash
-docker compose up --build
+git clone https://github.com/BetrayedByEthanol/Recipies
+cd Recipies
+docker compose up --build -d
 ```
 
 App is available at **http://localhost**.
@@ -15,86 +21,97 @@ App is available at **http://localhost**.
 ## Development
 
 ### Prerequisites
-- Node 20+
-- npm
 
-### Install dependencies
+- Node 20+
+- pnpm 9+ (`npm install -g pnpm@9`)
+
+### Install
 
 ```bash
-cd server && npm install
-cd ../client && npm install
+pnpm install
 ```
 
 ### Run locally
 
 ```bash
 # Terminal 1 — backend (hot reload)
-cd server && npm run dev
+pnpm dev:server
 
 # Terminal 2 — frontend (Vite HMR)
-cd client && npm run dev
+pnpm dev:client
 ```
 
 Frontend: http://localhost:5173  
 Backend: http://localhost:3001  
-The Vite dev server proxies `/api/*` → backend automatically.
+Vite proxies `/api/*` to the backend automatically.
+
+### Build
+
+```bash
+pnpm build
+```
+
+### Test
+
+```bash
+pnpm test
+```
+
+---
+
+## Write protection (optional)
+
+By default all routes are open, suitable for local or trusted-network use.
+
+To protect write routes (`POST`/`PUT`/`DELETE`) in production, set `ADMIN_TOKEN` in your environment or `docker-compose.yml`:
+
+```yaml
+environment:
+  ADMIN_TOKEN: your-secret-token
+```
+
+Write requests must then include:
+
+```
+Authorization: Bearer your-secret-token
+```
+
+Read routes (`GET`) are always public.
 
 ---
 
 ## Adding predefined recipes
 
-Edit `seeds/recipes.json` and add entries following the existing schema:
+Edit `seeds/recipes.json`. Seeds run only on first startup (empty database).
 
-```json
-{
-  "title": "Rezeptname",
-  "category": "Vegetarisch",
-  "emoji": "🥗",
-  "duration_minutes": 30,
-  "servings": 4,
-  "image_url": null,
-  "ingredients": [
-    { "amount": "200", "unit": "g", "name": "Zutat" }
-  ],
-  "steps": [
-    "Erster Schritt.",
-    "Zweiter Schritt."
-  ]
-}
-```
-
-Seeds only run on **first startup** when the database is empty. To reseed:
+To reseed:
 
 ```bash
 docker compose down -v   # removes the data volume
-docker compose up --build
+docker compose up --build -d
 ```
 
 ---
 
-## Data persistence
-
-Recipe data is stored in a SQLite database on a named Docker volume (`recipes-data`). It survives container restarts and rebuilds.
-
-To back up:
+## Data backup
 
 ```bash
-docker compose exec server sqlite3 /data/recipes.db ".backup /data/recipes.backup.db"
-docker compose cp server:/data/recipes.backup.db ./backup.db
+docker compose exec server sqlite3 /data/recipes.db ".backup /data/backup.db"
+docker compose cp server:/data/backup.db ./backup.db
 ```
 
 ---
 
 ## API
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/recipes` | List all recipes |
-| GET | `/api/recipes/:id` | Get single recipe |
-| POST | `/api/recipes` | Create recipe |
-| PUT | `/api/recipes/:id` | Update recipe |
-| DELETE | `/api/recipes/:id` | Delete recipe |
-| GET | `/health` | Health check |
+| Method | Path               | Auth required      | Description       |
+|--------|--------------------|--------------------|-------------------|
+| GET    | `/api/recipes`     | No                 | List all recipes  |
+| GET    | `/api/recipes/:id` | No                 | Get single recipe |
+| POST   | `/api/recipes`     | If ADMIN_TOKEN set | Create recipe     |
+| PUT    | `/api/recipes/:id` | If ADMIN_TOKEN set | Update recipe     |
+| DELETE | `/api/recipes/:id` | If ADMIN_TOKEN set | Delete recipe     |
+| GET    | `/health`          | No                 | Health check      |
 
 ---
 
@@ -108,27 +125,18 @@ recipes-app/
 │   │   ├── components/   # RecipeCard, RecipeDetail, RecipeForm
 │   │   ├── hooks/        # useRecipes
 │   │   └── App.tsx
-│   ├── Dockerfile
-│   └── vite.config.ts
+│   └── Dockerfile
 ├── server/               # Express + TypeScript + better-sqlite3
 │   ├── src/
+│   │   ├── __tests__/    # Vitest + Supertest smoke tests
 │   │   ├── db/           # Schema, seed, queries
+│   │   ├── middleware/   # auth (ADMIN_TOKEN)
 │   │   └── routes/       # /api/recipes, validation
 │   └── Dockerfile
-├── shared/
-│   └── types.ts          # Types shared between client and server
+├── shared/               # Shared TypeScript types + CATEGORIES constant
 ├── seeds/
-│   └── recipes.json      # Predefined recipes (plain JSON)
+│   └── recipes.json      # Predefined recipes
 ├── docker-compose.yml
-└── .github/workflows/ci.yml
+├── package.json          # Root workspace scripts
+└── pnpm-workspace.yaml
 ```
-
----
-
-## CI
-
-GitHub Actions runs on every push and PR to `main`:
-
-- Server: typecheck + lint
-- Client: typecheck + lint + build
-- Docker: `docker compose build`
