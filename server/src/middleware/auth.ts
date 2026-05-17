@@ -6,14 +6,14 @@ import { Request, Response, NextFunction } from 'express';
  * If set, write routes require: Authorization: Bearer <token>
  */
 export function requireAdminToken(req: Request, res: Response, next: NextFunction): void {
-  const token = process.env.ADMIN_TOKEN;
+  const token = process.env.ADMIN_TOKEN?.trim();
   if (!token) {
     next();
     return;
   }
 
   const header = req.headers.authorization ?? '';
-  const provided = header.startsWith('Bearer ') ? header.slice(7) : '';
+  const provided = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
 
   if (provided !== token) {
     res.status(401).json({ error: 'Unauthorized' });
