@@ -3,20 +3,38 @@ import { getAdminToken } from '../lib/adminToken';
 
 const BASE = '/api';
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is string => typeof entry === 'string');
+}
+
 function extractErrorMessage(body: unknown): string {
-  if (typeof body !== 'object' || body === null) return String(body);
-  const b = body as Record<string, unknown>;
-  if (typeof b.error === 'string') return b.error;
+  if (!isRecord(body)) return String(body);
+
+  if (typeof body.error === 'string') return body.error;
+
   // Zod flatten() returns { formErrors, fieldErrors } — make it readable
-  if (typeof b.error === 'object' && b.error !== null) {
-    const e = b.error as Record<string, unknown>;
-    const fields = Object.entries(e.fieldErrors ?? {})
-      .map(([k, v]) => `${k}: ${(v as string[]).join(', ')}`)
-      .join('; ');
-    const form = (e.formErrors as string[] | undefined)?.join(', ') ?? '';
-    return [form, fields].filter(Boolean).join(' — ') || 'Ungültige Eingabe';
+  if (isRecord(body.error)) {
+    const formErrors = asStringArray(body.error.formErrors).join(', ');
+
+    const fieldErrors = isRecord(body.error.fieldErrors)
+      ? Object.entries(body.error.fieldErrors)
+          .map(([key, value]) => {
+            const messages = asStringArray(value);
+            return messages.length > 0 ? `${key}: ${messages.join(', ')}` : '';
+          })
+          .filter(Boolean)
+          .join('; ')
+      : '';
+
+    return [formErrors, fieldErrors].filter(Boolean).join(' — ') || 'Ungültige Eingabe';
   }
-  return `HTTP ${(body as { status?: number }).status ?? 'error'}`;
+
+  return typeof body.status === 'number' ? `HTTP ${body.status}` : 'Ungültige Eingabe';
 }
 
 function withAdminAuthHeaders(headers: Record<string, string> = {}): Record<string, string> {
