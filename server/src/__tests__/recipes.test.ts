@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import request from 'supertest';
 import type { Application } from 'express';
 
 let app: Application;
+const originalAdminToken = process.env.ADMIN_TOKEN;
 
 beforeAll(async () => {
   process.env.DB_PATH = ':memory:';
@@ -10,8 +11,27 @@ beforeAll(async () => {
   app = mod.createApp();
 });
 
+beforeEach(() => {
+  delete process.env.ADMIN_TOKEN;
+});
+
+afterEach(() => {
+  if (originalAdminToken === undefined) {
+    delete process.env.ADMIN_TOKEN;
+    return;
+  }
+
+  process.env.ADMIN_TOKEN = originalAdminToken;
+});
+
 afterAll(() => {
   delete process.env.DB_PATH;
+  if (originalAdminToken === undefined) {
+    delete process.env.ADMIN_TOKEN;
+    return;
+  }
+
+  process.env.ADMIN_TOKEN = originalAdminToken;
 });
 
 const validPayload = {
@@ -61,6 +81,25 @@ describe('POST /api/recipes', () => {
       .send({ ...validPayload, category: 'INVALID' });
     expect(res.status).toBe(422);
   });
+
+  it('returns 401 without bearer token when admin token is set', async () => {
+    process.env.ADMIN_TOKEN = 'secret-token';
+
+    const res = await request(app).post('/api/recipes').send(validPayload);
+
+    expect(res.status).toBe(401);
+  });
+
+  it('creates recipe with bearer token when admin token is set', async () => {
+    process.env.ADMIN_TOKEN = 'secret-token';
+
+    const res = await request(app)
+      .post('/api/recipes')
+      .set('Authorization', 'Bearer secret-token')
+      .send(validPayload);
+
+    expect(res.status).toBe(201);
+  });
 });
 
 describe('PUT /api/recipes/:id', () => {
@@ -68,11 +107,69 @@ describe('PUT /api/recipes/:id', () => {
     const res = await request(app).put('/api/recipes/99999').send(validPayload);
     expect(res.status).toBe(404);
   });
+
+  it('returns 401 without bearer token when admin token is set', async () => {
+    process.env.ADMIN_TOKEN = 'secret-token';
+
+    const create = await request(app)
+      .post('/api/recipes')
+      .set('Authorization', 'Bearer secret-token')
+      .send(validPayload);
+
+    const res = await request(app).put(`/api/recipes/${create.body.data.id}`).send(validPayload);
+
+    expect(res.status).toBe(401);
+  });
+
+  it('updates recipe with bearer token when admin token is set', async () => {
+    process.env.ADMIN_TOKEN = 'secret-token';
+
+    const create = await request(app)
+      .post('/api/recipes')
+      .set('Authorization', 'Bearer secret-token')
+      .send(validPayload);
+
+    const res = await request(app)
+      .put(`/api/recipes/${create.body.data.id}`)
+      .set('Authorization', 'Bearer secret-token')
+      .send({ ...validPayload, title: 'Aktualisiert' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.title).toBe('Aktualisiert');
+  });
 });
 
 describe('DELETE /api/recipes/:id', () => {
   it('returns 404 for missing recipe', async () => {
     const res = await request(app).delete('/api/recipes/99999');
     expect(res.status).toBe(404);
+  });
+
+  it('returns 401 without bearer token when admin token is set', async () => {
+    process.env.ADMIN_TOKEN = 'secret-token';
+
+    const create = await request(app)
+      .post('/api/recipes')
+      .set('Authorization', 'Bearer secret-token')
+      .send(validPayload);
+
+    const res = await request(app).delete(`/api/recipes/${create.body.data.id}`);
+
+    expect(res.status).toBe(401);
+  });
+
+  it('deletes recipe with bearer token when admin token is set', async () => {
+    process.env.ADMIN_TOKEN = 'secret-token';
+
+    const create = await request(app)
+      .post('/api/recipes')
+      .set('Authorization', 'Bearer secret-token')
+      .send(validPayload);
+
+    const res = await request(app)
+      .delete(`/api/recipes/${create.body.data.id}`)
+      .set('Authorization', 'Bearer secret-token');
+
+    expect(res.status).toBe(204);
   });
 });
