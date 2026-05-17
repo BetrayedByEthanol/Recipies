@@ -1,4 +1,5 @@
 import type { Recipe, RecipePayload } from '@recipes/shared';
+import { getAdminToken } from '../lib/adminToken';
 
 const BASE = '/api';
 
@@ -16,6 +17,11 @@ function extractErrorMessage(body: unknown): string {
     return [form, fields].filter(Boolean).join(' — ') || 'Ungültige Eingabe';
   }
   return `HTTP ${(body as { status?: number }).status ?? 'error'}`;
+}
+
+function withAdminAuthHeaders(headers: Record<string, string> = {}): Record<string, string> {
+  const token = getAdminToken();
+  return token ? { ...headers, Authorization: `Bearer ${token}` } : headers;
 }
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
@@ -58,11 +64,11 @@ export const api = {
     request(`/recipes/${id}`),
 
   createRecipe: (payload: RecipePayload): Promise<Recipe> =>
-    request('/recipes', { method: 'POST', body: JSON.stringify(payload) }),
+    request('/recipes', { method: 'POST', headers: withAdminAuthHeaders(), body: JSON.stringify(payload) }),
 
   updateRecipe: (id: number, payload: RecipePayload): Promise<Recipe> =>
-    request(`/recipes/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
+    request(`/recipes/${id}`, { method: 'PUT', headers: withAdminAuthHeaders(), body: JSON.stringify(payload) }),
 
   deleteRecipe: (id: number): Promise<void> =>
-    request(`/recipes/${id}`, { method: 'DELETE' }),
+    request(`/recipes/${id}`, { method: 'DELETE', headers: withAdminAuthHeaders() }),
 };

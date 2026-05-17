@@ -1,0 +1,4 @@
+recipes.home.arpa {
+  tls internal
+  reverse_proxy client:80
+}
