@@ -69,21 +69,29 @@ jobs:
     needs: [server, client]
     steps:
       - uses: actions/checkout@v4
-      
-      
+
+
       - name: Validate HTTPS compose override
+        env:
+          ADMIN_TOKEN: ci-smoke-test-token
         run: docker compose -f docker-compose.yml -f docker-compose.https.yml config
 
       - name: Build and start Docker stack
+        env:
+          ADMIN_TOKEN: ci-smoke-test-token
         run: docker compose up -d --build
 
       - name: Show container status
+        env:
+          ADMIN_TOKEN: ci-smoke-test-token
         run: docker compose ps
 
       - name: Check frontend and API through nginx
+        env:
+          ADMIN_TOKEN: ci-smoke-test-token
         run: |
           BASE_URL=http://localhost:8080
-          
+
           for i in {1..30}; do
             if curl -fsS "$BASE_URL/" -o /tmp/index.html \
               && grep -q '<div id="root"></div>' /tmp/index.html \
@@ -126,8 +134,12 @@ jobs:
 
       - name: Show logs on failure
         if: failure()
+        env:
+          ADMIN_TOKEN: ci-smoke-test-token
         run: docker compose logs
 
       - name: Stop stack
         if: always()
+        env:
+          ADMIN_TOKEN: ci-smoke-test-token
         run: docker compose down -v
