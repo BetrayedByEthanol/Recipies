@@ -35,7 +35,8 @@ jobs:
 
       - run: pnpm --filter recipes-server run typecheck
       - run: pnpm --filter recipes-server run lint
-      - run: pnpm --filter recipes-server run test
+      - name: Workspace test command
+        run: pnpm test
 
   client:
     name: Client — typecheck, lint & build
