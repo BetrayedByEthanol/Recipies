@@ -188,7 +188,7 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
             <label className="block font-hand text-sage text-base font-semibold mb-2">Zutaten *</label>
             <div className="space-y-2">
               {ingredients.map((ing, i) => (
-                <div key={i} className="grid grid-cols-[90px_80px_1fr_36px] gap-2 items-center">
+                <div key={i} className="grid grid-cols-[90px_80px_1fr] gap-2 items-center">
                   <input
                     type="text"
                     value={ing.amount}
@@ -213,7 +213,7 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
                   <button
                     type="button"
                     onClick={() => removeIng(i)}
-                    className="w-9 h-9 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-sm hover:bg-red-100 transition-colors"
+                    className="col-span-2 sm:col-span-1 justify-self-end w-9 h-9 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-sm hover:bg-red-100 transition-colors"
                     aria-label="Zutat entfernen"
                   >✕</button>
                 </div>
