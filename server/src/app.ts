@@ -2,11 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { recipeRouter } from './routes/recipes';
-import { validateAuthConfig } from './config';
 
 export function createApp(): express.Application {
-  validateAuthConfig();
-
   const app = express();
   const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173';
 

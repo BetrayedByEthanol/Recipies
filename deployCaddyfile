@@ -1,4 +1,0 @@
-{$APP_DOMAIN} {
-  tls internal
-  reverse_proxy client:80
-}
