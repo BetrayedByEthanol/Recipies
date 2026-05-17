@@ -97,7 +97,7 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
       <div className="bg-parchment w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-2xl overscroll-contain animate-slide-up">
         <div className="w-10 h-1 bg-parchment-dark rounded-full mx-auto mt-3" />
 
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 pb-28 overscroll-contain">
           <h2 className="font-display text-2xl font-bold mb-6">
             {initial ? 'Rezept bearbeiten' : 'Neues Rezept'}
           </h2>
@@ -261,7 +261,8 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
 
           {/* Actions */}
           <div className="sticky bottom-0 -mx-4 sm:-mx-6 mt-6 px-4 sm:px-6 pt-4 border-t border-parchment-dark bg-parchment pb-[calc(1rem+env(safe-area-inset-bottom))]">
-            <button
+            <div className="flex gap-3">
+              <button
               type="button"
               onClick={handleSubmit}
               disabled={saving}
@@ -269,7 +270,7 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
             >
               {saving ? 'Speichern …' : '💾 Speichern'}
             </button>
-            <button
+              <button
               type="button"
               onClick={onClose}
               disabled={saving}
@@ -277,6 +278,7 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
             >
               Abbrechen
             </button>
+            </div>
           </div>
         </div>
       </div>
