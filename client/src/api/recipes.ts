@@ -37,17 +37,18 @@ function extractErrorMessage(body: unknown): string {
   return typeof body.status === 'number' ? `HTTP ${body.status}` : 'Ungültige Eingabe';
 }
 
-function withAdminAuthHeaders(headers: Record<string, string> = {}): Record<string, string> {
-  const token = getAdminToken();
-  return token ? { ...headers, Authorization: `Bearer ${token}` } : headers;
-}
-
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   let res: Response;
   try {
+    const token = getAdminToken();
+
     res = await fetch(`${BASE}${url}`, {
-      headers: { 'Content-Type': 'application/json' },
       ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options?.headers,
+      },
     });
   } catch {
     throw new Error('Keine Verbindung zum Server');
@@ -82,11 +83,11 @@ export const api = {
     request(`/recipes/${id}`),
 
   createRecipe: (payload: RecipePayload): Promise<Recipe> =>
-    request('/recipes', { method: 'POST', headers: withAdminAuthHeaders(), body: JSON.stringify(payload) }),
+    request('/recipes', { method: 'POST', body: JSON.stringify(payload) }),
 
   updateRecipe: (id: number, payload: RecipePayload): Promise<Recipe> =>
-    request(`/recipes/${id}`, { method: 'PUT', headers: withAdminAuthHeaders(), body: JSON.stringify(payload) }),
+    request(`/recipes/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
 
   deleteRecipe: (id: number): Promise<void> =>
-    request(`/recipes/${id}`, { method: 'DELETE', headers: withAdminAuthHeaders() }),
+    request(`/recipes/${id}`, { method: 'DELETE' }),
 };

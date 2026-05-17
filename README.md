@@ -59,18 +59,18 @@ pnpm test
 
 ---
 
-## Write protection (optional)
+## Write protection
 
-By default all routes are open, suitable for local or trusted-network use.
+Write routes (`POST`/`PUT`/`DELETE`) support token auth via `ADMIN_TOKEN`.
 
-To protect write routes (`POST`/`PUT`/`DELETE`) in production, set `ADMIN_TOKEN` in your environment or `docker-compose.yml`:
+In production (`NODE_ENV=production`), server startup requires one of:
 
-```yaml
-environment:
-  ADMIN_TOKEN: your-secret-token
-```
+- a non-empty `ADMIN_TOKEN`, or
+- `ALLOW_UNAUTHENTICATED_WRITES=true` for trusted/local-only deployments.
 
-Write requests must then include:
+An empty `ADMIN_TOKEN` in production intentionally prevents startup.
+
+When `ADMIN_TOKEN` is set, write requests must include:
 
 ```
 Authorization: Bearer your-secret-token
@@ -189,6 +189,10 @@ DNS:recipes.home.arpa
 cp .env.example .env
 # edit APP_DOMAIN, APP_ORIGIN, TLS_CERT_NAME if needed
 
+# APP_DOMAIN = served domain
+# TLS_CERT_NAME = certificate filename prefix under deploy/certs/
+# They are often the same, but can differ (for example wildcard cert files).
+
 docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env up -d --build
 ```
 
@@ -230,7 +234,6 @@ Check nginx logs:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env logs proxy
 curl -kI https://recipes.home.arpa/
-docker cp "$(docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env ps -q proxy)":/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
 ```
 
 Validate rendered nginx config:
