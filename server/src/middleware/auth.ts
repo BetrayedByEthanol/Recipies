@@ -6,6 +6,8 @@ import { Request, Response, NextFunction } from 'express';
  * If set, write routes require: Authorization: Bearer <token>
  */
 export function requireAdminToken(req: Request, res: Response, next: NextFunction): void {
+  // Intentionally read ADMIN_TOKEN on every request so operators can rotate
+  // the token at runtime without restarting the server process.
   const token = process.env.ADMIN_TOKEN?.trim();
   if (!token) {
     next();
