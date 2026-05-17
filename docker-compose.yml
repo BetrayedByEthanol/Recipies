@@ -11,7 +11,7 @@ services:
       CLIENT_ORIGIN: http://localhost
       ADMIN_TOKEN: ${ADMIN_TOKEN:-}
     volumes:
-      - recipes-data:/data
+      - ./deploy/data:/data
     expose:
       - "3001"
     healthcheck:
@@ -36,5 +36,3 @@ services:
       server:
         condition: service_healthy
 
-volumes:
-  recipes-data:

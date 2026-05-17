@@ -100,6 +100,26 @@ describe('POST /api/recipes', () => {
 
     expect(res.status).toBe(201);
   });
+
+
+  it('accepts bearer token when ADMIN_TOKEN has surrounding whitespace', async () => {
+    process.env.ADMIN_TOKEN = ' secret-token ';
+
+    const res = await request(app)
+      .post('/api/recipes')
+      .set('Authorization', 'Bearer secret-token')
+      .send(validPayload);
+
+    expect(res.status).toBe(201);
+  });
+
+  it('treats whitespace-only ADMIN_TOKEN as missing token', async () => {
+    process.env.ADMIN_TOKEN = '   ';
+
+    const res = await request(app).post('/api/recipes').send(validPayload);
+
+    expect(res.status).toBe(201);
+  });
 });
 
 describe('PUT /api/recipes/:id', () => {

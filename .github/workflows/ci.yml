@@ -76,6 +76,13 @@ jobs:
           ADMIN_TOKEN: ci-smoke-test-token
         run: docker compose -f docker-compose.yml -f docker-compose.https.yml config
 
+      - name: Prepare SQLite data directory
+        env:
+          ADMIN_TOKEN: ci-smoke-test-token
+        run: |
+          mkdir -p deploy/data
+          sudo chown -R 1000:1000 deploy/data
+
       - name: Build and start Docker stack
         env:
           ADMIN_TOKEN: ci-smoke-test-token
