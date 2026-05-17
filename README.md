@@ -192,6 +192,9 @@ cp .env.example .env
 # APP_DOMAIN = served domain
 # TLS_CERT_NAME = certificate filename prefix under deploy/certs/
 # They are often the same, but can differ (for example wildcard cert files).
+# The HTTPS path is two-hop: browser -> nginx proxy (TLS) -> client/server over Docker network (HTTP).
+# APP_DOMAIN controls host matching + redirects; TLS_CERT_NAME only selects cert/key filenames.
+
 
 docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env up -d --build
 ```
