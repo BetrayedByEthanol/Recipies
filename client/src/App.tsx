@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { clearAdminToken, getAdminToken, setAdminToken } from './lib/adminToken';
 import { useRecipes } from './hooks/useRecipes';
 import { RecipeCard } from './components/RecipeCard';
 import { RecipeDetail } from './components/RecipeDetail';
@@ -18,6 +19,8 @@ export default function App() {
   const [category,  setCategory]  = useState<'Alle' | Category>('Alle');
   const [toastMsg,  setToastMsg]  = useState('');
   const [toastShow, setToastShow] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [tokenInput, setTokenInput] = useState(getAdminToken() ?? '');
 
   const toast = (msg: string) => {
     setToastMsg(msg);
@@ -45,7 +48,18 @@ export default function App() {
           <h1 className="font-display text-2xl font-bold text-white tracking-wide">
             Rezepte <span className="italic font-normal text-green-200">App</span>
           </h1>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={() => {
+                setTokenInput(getAdminToken() ?? '');
+                setSettingsOpen(true);
+              }}
+              className="w-10 h-10 border-2 border-white/40 text-white rounded-xl text-lg hover:bg-white/15 active:scale-95 transition-all"
+              aria-label="Admin-Token Einstellungen"
+              title="Admin-Token"
+            >
+              ⚙️
+            </button>
             <button
               onClick={() => setModal({ kind: 'form' })}
               className="flex items-center gap-2 px-4 py-2 border-2 border-white/40 text-white rounded-xl text-sm font-body hover:bg-white/15 active:scale-95 transition-all"
@@ -167,6 +181,52 @@ export default function App() {
             }
           }}
         />
+      )}
+
+
+      {settingsOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm flex items-start justify-center p-4"
+          onClick={e => { if (e.target === e.currentTarget) setSettingsOpen(false); }}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Admin-Token Einstellungen"
+        >
+          <div className="w-full max-w-sm mt-20 bg-parchment rounded-2xl shadow-2xl p-4 sm:p-5">
+            <h2 className="font-display text-xl mb-2">Admin-Token</h2>
+            <p className="text-sm text-ink-light mb-3">Wird nur für POST/PUT/DELETE API-Aufrufe genutzt.</p>
+            <input
+              type="password"
+              value={tokenInput}
+              onChange={e => setTokenInput(e.target.value)}
+              placeholder="Bearer Token"
+              className="w-full px-4 py-2.5 font-body bg-white border-2 border-parchment-dark rounded-xl focus:outline-none focus:border-sage"
+            />
+            <div className="mt-4 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  clearAdminToken();
+                  setTokenInput('');
+                }}
+                className="px-3 py-2 rounded-lg border border-parchment-dark text-ink-light hover:text-ink"
+              >
+                Löschen
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAdminToken(tokenInput);
+                  setSettingsOpen(false);
+                  toast(tokenInput.trim() ? 'Admin-Token gespeichert' : 'Admin-Token entfernt');
+                }}
+                className="px-4 py-2 rounded-lg bg-sage text-white"
+              >
+                Speichern
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Toast */}
