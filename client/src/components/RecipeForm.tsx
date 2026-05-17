@@ -188,7 +188,7 @@ export function RecipeForm({ initial, onSave, onClose }: Props) {
             <label className="block font-hand text-sage text-base font-semibold mb-2">Zutaten *</label>
             <div className="space-y-2">
               {ingredients.map((ing, i) => (
-                <div key={i} className="grid grid-cols-[1fr_1fr] sm:grid-cols-[90px_80px_1fr_36px] gap-2 items-center">
+                <div key={i} className="grid grid-cols-[1fr_1fr_36px] sm:grid-cols-[90px_80px_1fr_36px] gap-2 items-center">
                   <input
                     type="text"
                     value={ing.amount}

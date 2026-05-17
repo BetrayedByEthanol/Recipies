@@ -140,3 +140,46 @@ recipes-app/
 ├── package.json          # Root workspace scripts
 └── pnpm-workspace.yaml
 ```
+
+---
+
+## Home HTTPS / PWA install
+
+PWA installation requires a secure context:
+
+- `http://localhost` is treated as secure on the same machine.
+- `http://192.168.x.x` or plain LAN hostnames are **not** secure contexts for service workers.
+- For home devices, use HTTPS (for example `https://recipes.home.arpa`).
+
+### Home DNS
+
+Add a local DNS/hosts entry:
+
+- `recipes.home.arpa` → `<server LAN IP>`
+
+### Start HTTPS stack (Caddy reverse proxy)
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.https.yml up -d --build
+```
+
+This keeps app containers HTTP-only internally. Caddy terminates TLS and proxies to `client:80`.
+
+If using Caddy `tls internal`, client devices must trust Caddy's local CA.
+For easier long-term home/production setup, use a real domain and Let's Encrypt DNS-01 challenge to avoid manual CA installation.
+
+### Quick HTTPS checks
+
+```bash
+curl -k https://recipes.home.arpa/manifest.webmanifest
+curl -k https://recipes.home.arpa/sw.js
+curl -k https://recipes.home.arpa/pwa-192x192.png
+```
+
+### Browser verification checklist
+
+1. Clear old site data.
+2. Unregister old service worker.
+3. Reload twice.
+4. Open DevTools → Application → Manifest.
+5. Confirm installability (browser offers **Install**, not just "Create shortcut").
