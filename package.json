@@ -9,7 +9,7 @@
     "build": "pnpm run build:shared && pnpm --filter recipes-server run build && pnpm --filter recipes-client run build",
     "typecheck": "pnpm --filter recipes-server run typecheck && pnpm --filter recipes-client run typecheck",
     "lint": "pnpm --filter recipes-server run lint && pnpm --filter recipes-client run lint",
-    "test": "pnpm -r --if-present run test"
+    "test": "pnpm run build:shared && pnpm -r --if-present run test"
   },
   "engines": {
     "node": ">=20",
