@@ -14,7 +14,7 @@ cd Recipies
 docker compose up --build -d
 ```
 
-App is available at **http://localhost**.
+App is available at **http://localhost:8080**.
 
 ---
 
@@ -147,7 +147,7 @@ recipes-app/
 
 PWA installation requires a secure context:
 
-- `http://localhost` is treated as secure on the same machine.
+- `http://localhost` and `http://localhost:8080` are treated as secure on the same machine.
 - `http://192.168.x.x` or plain LAN hostnames are **not** secure contexts for service workers.
 - For home devices, use HTTPS (for example `https://recipes.home.arpa`).
 

@@ -2,7 +2,7 @@ services:
   proxy:
     image: caddy:2
     environment:
-      APP_DOMAIN: ${APP_DOMAIN:-recipes.home.arpa}    
+      APP_DOMAIN: ${APP_DOMAIN:-recipes.home.arpa}
     restart: unless-stopped
     ports:
       - "80:80"
