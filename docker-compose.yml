@@ -32,8 +32,11 @@ services:
       context: .
       dockerfile: client/Dockerfile
     restart: unless-stopped
+    volumes:
+      - ./deploy/certs/:/etc/ssl/certs/
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
     depends_on:
       server:
         condition: service_healthy
