@@ -183,7 +183,6 @@ export default function App() {
         />
       )}
 
-
       {settingsOpen && (
         <div
           className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm flex items-start justify-center p-4"

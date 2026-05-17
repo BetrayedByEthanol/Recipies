@@ -4,7 +4,6 @@ import { registerSW } from 'virtual:pwa-register';
 import App from './App';
 import './index.css';
 
-
 const cleanupLegacyServiceWorker = async () => {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
 

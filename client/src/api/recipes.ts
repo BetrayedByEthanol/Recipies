@@ -19,7 +19,6 @@ function extractErrorMessage(body: unknown): string {
   return `HTTP ${(body as { status?: number }).status ?? 'error'}`;
 }
 
-
 function withAdminAuthHeaders(headers: Record<string, string> = {}): Record<string, string> {
   const token = getAdminToken();
   return token ? { ...headers, Authorization: `Bearer ${token}` } : headers;
