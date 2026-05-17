@@ -17,3 +17,4 @@ tmp/
 certs/
 deploy/certs/*
 !deploy/certs/.gitkeep
+!deploy/data/.gitkeep
