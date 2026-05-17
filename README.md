@@ -153,14 +153,16 @@ PWA installation requires a secure context:
 
 ### Home DNS
 
-Add a local DNS/hosts entry:
+DNS must be configured separately:
 
-- `recipes.home.arpa` → `<server LAN IP>`
+- `APP_DOMAIN` → server LAN IP
 
 ### Start HTTPS stack (Caddy reverse proxy)
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.https.yml up -d --build
+cp .env.example .env
+# edit APP_DOMAIN and APP_ORIGIN
+docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env up -d --build
 ```
 
 This keeps app containers HTTP-only internally. Caddy terminates TLS and proxies to `client:80`.
