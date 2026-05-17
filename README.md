@@ -147,33 +147,85 @@ recipes-app/
 
 PWA installation requires a secure context:
 
-- `http://localhost` and `http://localhost:8080` are treated as secure on the same machine.
-- `http://192.168.x.x` or plain LAN hostnames are **not** secure contexts for service workers.
-- For home devices, use HTTPS (for example `https://recipes.home.arpa`).
+`docker-compose.https.yml` is optional and keeps TLS in a separate reverse-proxy container. The app containers stay HTTP-only internally.
 
-### Home DNS
+### Home HTTPS with nginx
 
 DNS must be configured separately:
 
-- `APP_DOMAIN` must resolve to the Docker host LAN IP for every client device.
+#### A. DNS requirement
 
-### Start HTTPS stack (Caddy reverse proxy)
+- `recipes.home.arpa -> <server LAN IP>`
+
+#### B. Generate local cert with SAN using mkcert
+
+```bash
+mkdir -p deploy/certs
+
+mkcert   -cert-file deploy/certs/recipes.home.arpa.crt   -key-file deploy/certs/recipes.home.arpa.key   recipes.home.arpa
+```
+
+Or include a LAN IP SAN too:
+
+```bash
+mkcert   -cert-file deploy/certs/recipes.home.arpa.crt   -key-file deploy/certs/recipes.home.arpa.key   recipes.home.arpa 192.168.1.50
+```
+
+#### C. Verify SAN
+
+```bash
+openssl x509 -in deploy/certs/recipes.home.arpa.crt -noout -text | grep -A2 "Subject Alternative Name"
+```
+
+Expected output includes:
+
+```text
+DNS:recipes.home.arpa
+```
+
+#### D. Start HTTPS stack
 
 ```bash
 cp .env.example .env
-# edit APP_DOMAIN and APP_ORIGIN
+# edit APP_DOMAIN, APP_ORIGIN, TLS_CERT_NAME if needed
+
 docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env up -d --build
 ```
 
-This keeps app containers HTTP-only internally. Caddy terminates TLS and proxies to `client:80`.
+#### E. Test
 
-`docker-compose.https.yml` is optional and only needed when you want HTTPS on your LAN hostname.
+```bash
+curl -kI https://recipes.home.arpa/
+curl -k https://recipes.home.arpa/manifest.webmanifest
+curl -k https://recipes.home.arpa/sw.js
+```
 
-If using Caddy `tls internal`, Caddy creates a private local CA. Browser SSL warnings are expected until that CA root certificate is trusted on each client device.
+#### F. Client trust
 
-For easier long-term home/production setup, use a real domain with Let's Encrypt DNS-01 so clients do not require manual CA installation.
+- `curl -k` bypasses trust and only proves the server is serving HTTPS.
+- PWA install requires the browser to trust the cert without warnings.
+- Install/trust the mkcert root CA on each device.
+- On Linux:
 
-### Quick HTTPS checks
+```bash
+sudo cp "$(mkcert -CAROOT)/rootCA.pem" /usr/local/share/ca-certificates/mkcert-rootCA.crt
+sudo update-ca-certificates
+```
+
+- Restart Chrome after trusting the CA.
+
+#### G. 
+
+If browser shows a certificate error, check:
+
+```bash
+curl -Iv https://recipes.home.arpa/
+```
+
+- If error says self-signed/unknown issuer: client trust problem.
+- If TLS handshake fails: check nginx logs.
+
+Check nginx logs:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env logs proxy
@@ -181,7 +233,11 @@ curl -kI https://recipes.home.arpa/
 docker cp "$(docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env ps -q proxy)":/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
 ```
 
-Each device that accesses `https://$APP_DOMAIN` must trust `caddy-root.crt`, or you should use a real domain with Let's Encrypt DNS-01.
+Validate rendered nginx config:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env exec proxy nginx -T
+
 
 ```
 

@@ -1,19 +1,16 @@
 services:
   proxy:
-    image: caddy:2
+    image: nginx:1.25-alpine
+    restart: unless-stopped
     environment:
       APP_DOMAIN: ${APP_DOMAIN:-recipes.home.arpa}
-      TLS_CERT_FILE: ${TLS_CERT_FILE:-/etc/caddy/certs/recipes.home.arpa.crt}
-      TLS_KEY_FILE: ${TLS_KEY_FILE:-/etc/caddy/certs/recipes.home.arpa.key}
-    restart: unless-stopped
+      TLS_CERT_NAME: ${TLS_CERT_NAME:-recipes.home.arpa}
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./deploy/certs:/etc/caddy/certs:ro
-      - caddy-data:/data
-      - caddy-config:/config
+      - ./deploy/nginx/templates/https.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./deploy/certs:/etc/nginx/certs:ro
     depends_on:
       - client
 
@@ -25,7 +22,5 @@ services:
   server:
     environment:
       CLIENT_ORIGIN: ${APP_ORIGIN:-https://recipes.home.arpa}
-
-volumes:
-  caddy-data:
-  caddy-config:
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      
