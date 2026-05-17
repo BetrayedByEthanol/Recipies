@@ -5,7 +5,6 @@ services:
     environment:
       APP_DOMAIN: ${APP_DOMAIN:-recipes.home.arpa}
       TLS_CERT_NAME: ${TLS_CERT_NAME:-recipes.home.arpa}
-    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
