@@ -155,7 +155,7 @@ PWA installation requires a secure context:
 
 DNS must be configured separately:
 
-- `APP_DOMAIN` → server LAN IP
+- `APP_DOMAIN` must resolve to the Docker host LAN IP for every client device.
 
 ### Start HTTPS stack (Caddy reverse proxy)
 
@@ -167,15 +167,22 @@ docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env
 
 This keeps app containers HTTP-only internally. Caddy terminates TLS and proxies to `client:80`.
 
-If using Caddy `tls internal`, client devices must trust Caddy's local CA.
-For easier long-term home/production setup, use a real domain and Let's Encrypt DNS-01 challenge to avoid manual CA installation.
+`docker-compose.https.yml` is optional and only needed when you want HTTPS on your LAN hostname.
+
+If using Caddy `tls internal`, Caddy creates a private local CA. Browser SSL warnings are expected until that CA root certificate is trusted on each client device.
+
+For easier long-term home/production setup, use a real domain with Let's Encrypt DNS-01 so clients do not require manual CA installation.
 
 ### Quick HTTPS checks
 
 ```bash
-curl -k https://recipes.home.arpa/manifest.webmanifest
-curl -k https://recipes.home.arpa/sw.js
-curl -k https://recipes.home.arpa/pwa-192x192.png
+docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env logs proxy
+curl -kI https://recipes.home.arpa/
+docker cp "$(docker compose -f docker-compose.yml -f docker-compose.https.yml --env-file .env ps -q proxy)":/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
+```
+
+Each device that accesses `https://$APP_DOMAIN` must trust `caddy-root.crt`, or you should use a real domain with Let's Encrypt DNS-01.
+
 ```
 
 ### Browser verification checklist

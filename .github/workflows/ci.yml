@@ -76,12 +76,14 @@ jobs:
 
       - name: Check frontend and API through nginx
         run: |
+          BASE_URL=http://localhost:8080
+          
           for i in {1..30}; do
-            if curl -fsS http://localhost/ -o /tmp/index.html \
+            if curl -fsS "$BASE_URL/" -o /tmp/index.html \
               && grep -q '<div id="root"></div>' /tmp/index.html \
               && grep -q 'rel="manifest"' /tmp/index.html \
               && grep -q '/manifest.webmanifest' /tmp/index.html \
-              && curl -fsS http://localhost/manifest.webmanifest -o /tmp/manifest.json \
+              && curl -fsS "$BASE_URL/manifest.webmanifest" -o /tmp/manifest.json \
               && node -e "
                 const fs = require('fs');
                 const text = fs.readFileSync('/tmp/manifest.json', 'utf8');
@@ -91,13 +93,13 @@ jobs:
                 if (!manifest.icons || manifest.icons.length < 2) throw new Error('manifest missing icons');
                 if (manifest.display !== 'standalone') throw new Error('manifest display is not standalone');
               " \
-              && curl -fsS http://localhost/pwa-192x192.png -o /tmp/pwa-192x192.png \
-              && curl -fsS http://localhost/pwa-512x512.png -o /tmp/pwa-512x512.png \
-              && curl -fsS http://localhost/api/recipes > /dev/null; then
+              && curl -fsS "$BASE_URL/pwa-192x192.png" -o /tmp/pwa-192x192.png \
+              && curl -fsS "$BASE_URL/pwa-512x512.png" -o /tmp/pwa-512x512.png \
+              && curl -fsS "$BASE_URL/api/recipes" > /dev/null; then
 
               CSS_PATH=$(grep -oE '/assets/[^" ]+\.css' /tmp/index.html | head -n1)
               test -n "$CSS_PATH"
-              curl -fsS "http://localhost${CSS_PATH}" -o /tmp/app.css
+              curl -fsS "$BASE_URL${CSS_PATH}" -o /tmp/app.css
 
               if ! grep -Eq 'position:fixed|\.flex|rounded-xl' /tmp/app.css; then
                 echo "Tailwind CSS output not detected"

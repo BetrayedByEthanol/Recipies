@@ -3,12 +3,15 @@ services:
     image: caddy:2
     environment:
       APP_DOMAIN: ${APP_DOMAIN:-recipes.home.arpa}
+      TLS_CERT_FILE: ${TLS_CERT_FILE:-/etc/caddy/certs/recipes.home.arpa.crt}
+      TLS_KEY_FILE: ${TLS_KEY_FILE:-/etc/caddy/certs/recipes.home.arpa.key}
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./deploy/certs:/etc/caddy/certs:ro
       - caddy-data:/data
       - caddy-config:/config
     depends_on:
