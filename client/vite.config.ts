@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
+const APP_ORIGIN = (process.env.VITE_APP_ORIGIN ?? 'https://recipes.example.com').replace(/\/$/, '');
+
 export default defineConfig({
   plugins: [
     react(),
@@ -15,15 +17,15 @@ export default defineConfig({
         description: 'Unsere Familienrezepte — immer dabei',
         theme_color: '#4a6e3a',
         background_color: '#faf6ef',
-        id: '/',
-        start_url: '/',
-        scope: '/',
+        id: `${APP_ORIGIN}/`,
+        start_url: `${APP_ORIGIN}/`,
+        scope: `${APP_ORIGIN}/`,
         display: 'standalone',
         orientation: 'any',
         lang: 'de',
         icons: [
-          { src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+          { src: `${APP_ORIGIN}/pwa-192x192.png`, sizes: '192x192', type: 'image/png' },
+          { src: `${APP_ORIGIN}/pwa-512x512.png`, sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
         ],
       },
       workbox: {
